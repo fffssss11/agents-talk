@@ -1,4 +1,4 @@
-* text=auto
+* text=auto eol=lf
 *.py text eol=lf
 *.js text eol=lf
 *.cjs text eol=lf
@@ -10,3 +10,6 @@
 *.vbs text eol=crlf
 *.png binary
 *.zip binary
+*.pptx binary
+*.pdf binary
+*.mp4 binary
