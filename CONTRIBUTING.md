@@ -49,4 +49,4 @@ Linux CI 安装浏览器及系统依赖使用 `npx playwright install --with-dep
 
 跟随 [发布清单](docs/release.md)。版本同时更新 `VERSION`、`package.json` 和 lockfile。发布清单只打包源码，`.gitignore` 仅保护 Git 默认选择，不能清除曾经提交的秘密，也不替代人工安全审查。
 
-当前许可证仍待项目所有者确认。确认之前不对外征集按特定开源许可授权的贡献，也不将候选包描述为正式开源发布。
+贡献代码按本项目 MIT 许可证分发。提交前确认你有权贡献相关内容，不包含私人数据或未经授权的第三方材料。

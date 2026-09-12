@@ -6,11 +6,15 @@
 
 Agents Talk 通过共享事件记录和 skill 协议连接 Codex、Claude Code、Reasonix、ZCode 的独立会话。支持同客户端多实例、人工干预、任务依赖、独立验收、整合工作树和按实例统计用量。
 
-当前版本：`0.1.0-rc.2`。仓库 [fffssss11/agents-talk](https://github.com/fffssss11/agents-talk) 目前处于私有预发布阶段，许可证与公开署名待确认。实际验证范围见 [发布说明](docs/release.md)。
+当前版本：`0.1.0-rc.3`，采用 [MIT 许可证](LICENSE)，处于公开预发布阶段。实际验证范围与已知限制见 [发布说明](docs/release.md)。
 
 [发布附件](https://github.com/fffssss11/agents-talk/releases) · [问题反馈](https://github.com/fffssss11/agents-talk/issues) · [参与开发](CONTRIBUTING.md)
 
-![全新空白会话的本地面板，无模拟对话](docs/assets/dashboard.png)
+[![54 秒功能短片，使用隔离演示数据](docs/assets/promo-poster.png)](https://github.com/fffssss11/agents-talk/releases/download/v0.1.0-rc.3/Agents-Talk-Promo-1080p60.mp4)
+
+[下载源码 ZIP](https://github.com/fffssss11/agents-talk/releases/download/v0.1.0-rc.3/agents-talk-0.1.0-rc.3.zip) · [观看宣传视频](https://github.com/fffssss11/agents-talk/releases/download/v0.1.0-rc.3/Agents-Talk-Promo-1080p60.mp4) · [6 页介绍 PPT](https://github.com/fffssss11/agents-talk/releases/download/v0.1.0-rc.3/Agents-Talk-Quick-Overview.pptx)
+
+视频使用实际界面的隔离演示数据，未调用真实模型。概念背景由 AI 生成。
 
 ## 它能做什么
 
@@ -96,12 +100,12 @@ Node 20+ 和 Playwright 只用于浏览器测试。测试使用隔离数据及�
 **不要直接压缩正在使用的项目目录。** 发布工具仅收录 `release-files.json` 中的确切源码，排除聊天、附件、业务成果、本机配置和备份，并检查个人路径与常见密钥特征。检查方法不能替代人工审查。
 
 ```sh
-python scripts/build_release.py --check --allow-unlicensed
-python scripts/build_release.py --allow-unlicensed
+python scripts/build_release.py --check
+python scripts/build_release.py
 ```
 
-当前许可证待项目所有者确认，以上命令生成私人审阅候选包，不能将其宣传为已经授权的开源版本。确认许可证后去掉 `--allow-unlicensed`，按 [发布说明](docs/release.md) 验证再发布。本项目没有自动上传或发布功能。
+按 [发布说明](docs/release.md) 完成测试、隐私审查和干净副本验证后发布。发布工具不自动上传文件。源码包附文件清单及 SHA-256，Release 提供附件校验值。
 
 ## 许可证与关联声明
 
-许可证待项目所有者选择，当前没有对外授予开源许可。客户端名称用于标识互操作对象，本项目不声明得到 OpenAI、Anthropic、Reasonix 或 ZCode 官方授权、支持或背书。
+[MIT License](LICENSE)，Copyright (c) 2026 fffssss11。第三方工具与素材说明见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。客户端名称用于标识互操作对象，本项目不声明得到 OpenAI、Anthropic、Reasonix 或 ZCode 官方授权、支持或背书。

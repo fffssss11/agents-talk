@@ -1,9 +1,9 @@
 {
   "name": "agents-talk",
-  "version": "0.1.0-rc.2",
+  "version": "0.1.0-rc.3",
   "private": true,
   "description": "Local multi-agent collaboration board. Node is only needed for browser development tests.",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "engines": {
     "node": ">=20"
   },
@@ -12,10 +12,18 @@
     "test:browser": "node tests/browser.cjs",
     "test:observatory": "node tests/observatory.cjs",
     "test:instances": "node tests/instances.cjs",
-    "check": "node --check web/app.js",
+    "check": "node --check web/app.js && node --check docs/promo/timeline.js && node --check docs/promo/render.cjs",
     "browser:install": "playwright install chromium"
   },
   "devDependencies": {
     "playwright": "1.63.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fffssss11/agents-talk.git"
+  },
+  "homepage": "https://github.com/fffssss11/agents-talk",
+  "bugs": {
+    "url": "https://github.com/fffssss11/agents-talk/issues"
   }
 }

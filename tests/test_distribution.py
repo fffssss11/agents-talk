@@ -174,10 +174,19 @@ class DistributionTests(unittest.TestCase):
         with self.assertRaises(ValueError): release.inventory(self.project)
 
     def test_release_license_gate(self):
+        self.assertEqual(release.build(self.project)['license_status'], 'included')
         manifest = self.project / 'release-files.json'
         manifest.write_text(json.dumps([p for p in json.loads(manifest.read_text(encoding='utf-8')) if p != 'LICENSE']))
         with self.assertRaisesRegex(ValueError, 'No LICENSE'): release.build(self.project)
         self.assertEqual(release.build(self.project, allow_unlicensed=True)['license_status'], 'pending_owner_choice')
+
+    def test_release_rejects_inconsistent_license_metadata(self):
+        lock = self.project / 'package-lock.json'
+        data = json.loads(lock.read_text(encoding='utf-8'))
+        data['packages']['']['license'] = 'UNLICENSED'
+        lock.write_text(json.dumps(data), encoding='utf-8')
+        with self.assertRaisesRegex(ValueError, 'license metadata must agree'):
+            release.build(self.project)
 
     def test_release_rejects_inconsistent_version_metadata(self):
         package = self.project / 'package.json'

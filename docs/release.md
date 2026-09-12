@@ -1,46 +1,46 @@
 # 发布与验收
 
-## 当前状态
+## 当前版本
 
-`0.1.0-rc.2` 已上传至 [fffssss11/agents-talk](https://github.com/fffssss11/agents-talk)。仓库保持私有预发布状态，许可证及公开署名待项目所有者确认，当前不对外授予开源许可。
+`0.1.0-rc.3`，MIT 许可，公开预发布版。源码与演示材料位于 [GitHub Release](https://github.com/fffssss11/agents-talk/releases/tag/v0.1.0-rc.3)。保留预发布标记，便于收集原生客户端与不同设备的试用反馈。
 
-源码和项目介绍材料用于发布前审阅。确认许可证后需加入 LICENSE、同步 package 元数据和发布清单，重新打包，再转为公开。不得将私人候选包描述成已经授权的开源版本。
+运行程序沿用 rc.2。本版增加许可证一致性检查、公开项目元数据、文档链接回归，以及精简 PPT 和宣传视频。
 
 ## 实际验证
 
-2026-09-12 完成本轮验证。程序及启动脚本对应提交 `80772e5`，随后文档更新不改变这些程序文件。
+2026-09-12 本机 Windows 验证结果：
 
-| 环境或内容 | 结果 |
+| 内容 | 结果 |
 | --- | --- |
-| 本机 Windows，Python 3.13.5 | 89 项测试，88 项通过，1 项因符号链接权限限制跳过 |
-| GitHub Windows，Python 3.10 / 3.13 | 后端、安装、启动、诊断、源码清单和隐私检查通过 |
-| GitHub macOS / Ubuntu，Python 3.10 / 3.13 | 后端、安装、诊断、源码清单和隐私检查通过；Windows 专用测试跳过 |
-| 浏览器 | 本机 Chrome 与 GitHub Linux Chromium 的三套回归通过，含发送、人工控制、重连、窄屏、观察窗和同客户端多实例 |
-| 安装与干净副本 | 隔离 skill 目标验证预览、安装、重复安装和保守卸载；源码 ZIP 解压启动为零消息、零任务 |
-| 演示材料 | 12 页 PPTX 结构、版面、字体策略与重新导入检查通过；PPT/PDF 逐页检查，备注、链接、作者属性和附件检查未发现私人信息 |
+| Python 3.13.5 | 93 项测试，92 项通过，1 项因符号链接权限限制跳过 |
+| Chrome 浏览器 | 三套回归通过，含发送、人工控制、重连、窄屏、观察窗和同客户端多实例 |
+| 发布检查 | 精确清单、许可证、版本一致性、文档本地链接及静态隐私检查通过 |
+| PPT 与 PDF | 6 页，PPTX 结构、版面、字体和重新导入检查通过，逐页检查可见内容 |
 
-[通过的 GitHub CI 运行](https://github.com/fffssss11/agents-talk/actions/runs/34680493153) 含 7 个成功的 job。CI 使用托管环境，不能替代所有用户设备和原生客户端的验证。
+跨平台 CI 包含 Windows/macOS/Ubuntu 与 Python 3.10/3.13，以及 Linux Chromium 浏览器测试。前一版已有 [7 个 job 全部通过的记录](https://github.com/fffssss11/agents-talk/actions/runs/34680720373)。本版本最终提交与 CI 链接列在 Release 中，最新状态见 [Actions](https://github.com/fffssss11/agents-talk/actions)。配置本身不代表每次运行已经通过。
 
-审查中修复了英文 Windows 输出中文路径的编码错误；随后一次 Windows 启动测试超出原 35 秒测试预算。现已优先验证明确指定的 Python，服务就绪等待有计时边界并核对新进程 PID，失败时只清理本次子进程；测试保留所有原断言，并为互斥锁等待和共享运行器启动留出预算。复验全部通过。
+本机 Playwright 下载曾遇到 TLS 传输错误，测试改用已安装的 Chrome，没有关闭 TLS 校验。测试、截图和干净安装均使用独立目录，不写正式聊天。
 
-本机 Playwright Chromium 下载曾因 TLS 传输错误未完成，没有关闭 TLS 校验。本机浏览器测试使用已安装的 Chrome；GitHub Linux 成功安装并运行 Playwright Chromium。
+## 交付内容
 
-## 尚未验证或不提供的能力
+- 源码 ZIP，内含 `SOURCE-MANIFEST.json`，记录每个源码文件的 SHA-256。
+- ZIP 独立校验文件与全部附件的 `SHA256SUMS.txt`。
+- 6 页可编辑 PPTX，以及图像 PDF 阅读版。
+- 54 秒 1080p/60fps MP4，AAC 立体声，含原创合成配乐，无旁白。画面使用隔离演示截图，概念背景由 AI 生成。视频验证记录随 Release 列出。
 
-- 本轮未验证真实客户端中的 skill 发现、模型/API 调用、图片/视频生成效果或所有账户组合。文件安装成功不等于原生接入成功。
-- 没有压力测试、性能收益基准或第三方安全审计认证。长历史读取仍需推导事件，面向可信本机的小规模协作。
-- Windows 提供桌面快捷方式；macOS/Linux 使用前台入口，没有原生桌面安装包。
-- PPT 使用微软雅黑，其他设备可能替换字体。PDF 为图像阅读版。没有宣称在 PowerPoint 原生应用内验证。
+发布工具只读取 `release-files.json` 的精确文件，不遍历真实聊天、附件、成果、配置、安装版路径、依赖或备份。同一源码字节生成确定的 ZIP，工具拒绝覆盖已有归档。校验值检查文件一致性，不提供作者签名。
 
-## 发布包与隐私
+## 已知边界
 
-只收录 `release-files.json` 中精确列出的源码和公开演示图，不遍历工作目录。排除真实消息、附件、业务成果、本机配置、安装版路径、依赖、备份及诊断日志。本轮正式聊天日志和本机配置的校验值未发生变化。
+- 未覆盖所有原生客户端的 skill 发现、实际模型/API 调用、媒体生成或账户组合。安装文件成功仍需检查实际报到。
+- 不提供原生窗口自动创建、真实模型切换或回合停止后的自动唤醒保证。
+- 仅面向可信本机，缺少多租户认证、系统沙箱及本地加密。没有第三方安全审计或性能收益基准。
+- Windows 提供快捷方式，macOS/Linux 使用前台入口，均没有原生桌面安装包。
+- PPT 使用微软雅黑，接收端可能替换字体。PDF 与 MP4 已渲染文字。未在 PowerPoint 原生应用内验证。
 
-包内 `SOURCE-MANIFEST.json` 记录各源码文件的 SHA-256，包外校验文件记录 ZIP 和演示材料的摘要。固定 ZIP 时间戳，同一份源码字节生成一致的归档。校验值用于检查完整性，不构成作者签名。打包器拒绝覆盖已有 ZIP。
+## 复现
 
-## 复现发布检查
-
-遵循 [三轮发布检查](publication-checklist.md)，从独立干净目录操作：
+按 [发布检查清单](publication-checklist.md) 从干净副本运行：
 
 ```sh
 python -m unittest discover -s tests -v
@@ -49,4 +49,4 @@ python scripts/build_release.py --check
 python scripts/build_release.py
 ```
 
-许可证确认前，上述打包命令需显式添加 `--allow-unlicensed`，输出仅限私人审阅。确认后去掉该标记。运行面板不依赖 pip 或 npm；浏览器开发测试命令见 [贡献指南](../CONTRIBUTING.md)。
+浏览器测试见 [贡献指南](../CONTRIBUTING.md)，视频制作见 [分镜与复现](promo/README.md)。`--allow-unlicensed` 仅供未选择许可证的私人候选审阅，公开 CI 与正常发布不使用该参数。

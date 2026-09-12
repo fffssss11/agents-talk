@@ -8,7 +8,11 @@ Features include shared discussions, task dependencies, file claims, human inter
 
 The board does not call model APIs, require API keys, select real models, open native conversations, or scrape private transcripts. Users invoke the installed skill in each native conversation. Client authentication, model availability and media tools remain the user's responsibility. File claims are cooperative, not an OS sandbox. Ended model turns are not automatically awakened.
 
-![Empty local dashboard, no simulated conversations](docs/assets/dashboard.png)
+[![54-second promotional video with isolated demonstration data](docs/assets/promo-poster.png)](https://github.com/fffssss11/agents-talk/releases/download/v0.1.0-rc.3/Agents-Talk-Promo-1080p60.mp4)
+
+[Download source ZIP](https://github.com/fffssss11/agents-talk/releases/download/v0.1.0-rc.3/agents-talk-0.1.0-rc.3.zip) · [Release assets](https://github.com/fffssss11/agents-talk/releases/tag/v0.1.0-rc.3)
+
+The video uses isolated demo screenshots with no real model calls, an AI-generated conceptual background and an original synthesized soundtrack.
 
 ## Run
 
@@ -52,8 +56,8 @@ Windows optionally provides `scripts/install.ps1` for skills plus a desktop shor
 
 Listen address is restricted to loopback. Do not expose the service through a proxy or tunnel. This is a trusted local-workstation tool, not a multi-user authentication boundary. See [SECURITY.md](SECURITY.md).
 
-This is `0.1.0-rc.2`. The [GitHub repository](https://github.com/fffssss11/agents-talk) is in private pre-release preparation while license and public attribution are confirmed. See [release notes](docs/release.md) for actual verification status.
+Version `0.1.0-rc.3` is a public pre-release under the [MIT License](LICENSE). See [release notes](docs/release.md) for actual verification status and remaining limitations.
 
 Never publish your working directory as an archive. `scripts/build_release.py` uses an exact source allowlist and excludes private data; it also checks common credential and personal-path patterns. Review the archive manually before publication.
 
-License selection is pending the project owner's confirmation. `--allow-unlicensed` produces a private review candidate only. No open-source license grant is currently made. Client names identify interoperability targets and do not imply affiliation or endorsement.
+Copyright (c) 2026 fffssss11. See [third-party notices](THIRD_PARTY_NOTICES.md). Client names identify interoperability targets and do not imply affiliation or endorsement.

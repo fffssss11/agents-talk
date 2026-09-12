@@ -58,6 +58,8 @@ def build(root, output=None, allow_unlicensed=False):
     licensed = 'LICENSE' in entries
     if licensed and (len(entries['LICENSE'].strip()) < 100 or package.get('license') in (None, '', 'UNLICENSED')):
         raise ValueError('Complete LICENSE and consistent package license metadata are required')
+    if licensed and lockfile['packages'][''].get('license') != package.get('license'):
+        raise ValueError('Package and lockfile license metadata must agree')
     if not licensed and not allow_unlicensed:
         raise ValueError('No LICENSE selected. Confirm it before publishing; --allow-unlicensed creates a private review candidate only.')
     files = [{'path': p, 'bytes': len(b), 'sha256': hashlib.sha256(b).hexdigest()} for p, b in entries.items()]

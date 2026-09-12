@@ -27,7 +27,9 @@ Agents Talk 支持 Codex、Claude Code、Reasonix、ZCode，也支持同一客�
 
 启动空白面板，登记三个独立实例，逐个接入；发送小任务，观察工作树和共享消息；追加人工要求，检查回执；展示验收和最终整合记录。演示前清空或切换到独立数据目录，不使用正式聊天历史。
 
-PPTX/PDF 随对应版本的 GitHub Release 分发，避免源码仓库长期累积大型二进制文件。
+本版提供 6 页 PPTX、对应 PDF 阅读版和 54 秒 1080p/60fps MP4。视频使用平滑推拉、文字分步出现和转场，包含原创合成配乐，无旁白。
+
+[下载全部材料](https://github.com/fffssss11/agents-talk/releases/tag/v0.1.0-rc.3)。动画源码、分镜及复现步骤见 [宣传视频](../promo/README.md)。大型二进制附件仅在 Release 分发。
 
 ## 界面示例
 
