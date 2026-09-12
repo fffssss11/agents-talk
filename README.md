@@ -8,6 +8,8 @@ Agents Talk 通过共享事件记录和 skill 协议连接 Codex、Claude Code�
 
 当前版本：`0.1.0-rc.2`。仓库 [fffssss11/agents-talk](https://github.com/fffssss11/agents-talk) 目前处于私有预发布阶段，许可证与公开署名待确认。实际验证范围见 [发布说明](docs/release.md)。
 
+[发布附件](https://github.com/fffssss11/agents-talk/releases) · [问题反馈](https://github.com/fffssss11/agents-talk/issues) · [参与开发](CONTRIBUTING.md)
+
 ![全新空白会话的本地面板，无模拟对话](docs/assets/dashboard.png)
 
 ## 它能做什么
