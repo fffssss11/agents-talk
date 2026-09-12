@@ -243,6 +243,21 @@ class DistributionTests(unittest.TestCase):
         self.assertEqual(version, json.loads((self.project / 'package-lock.json').read_text(encoding='utf-8'))['version'])
         self.assertIn(version, self.run_cli('--version').stdout)
 
+    def test_public_cli_outputs_utf8_under_legacy_windows_encoding(self):
+        env = {**self.env, 'PYTHONUTF8': '0', 'PYTHONIOENCODING': 'cp1252:strict'}
+        commands = [
+            ['build_release.py', '--check', '--allow-unlicensed'],
+            ['install_skills.py', '--clients', 'codex', '--target', 'codex=' + str(self.base / '技能目录')],
+            ['audit_public.py', '--source', str(self.project)],
+        ]
+        for script, *args in commands:
+            with self.subTest(script=script):
+                result = subprocess.run([sys.executable, str(self.project / 'scripts' / script), *args],
+                                        cwd=self.base, env=env, capture_output=True, timeout=20)
+                self.assertEqual(result.returncode, 0, result.stderr.decode('utf-8'))
+                self.assertIsInstance(json.loads(result.stdout.decode('utf-8')), dict)
+        self.assertFalse((self.base / '技能目录').exists())
+
     def test_archive_extracts_to_a_working_empty_project(self):
         archive = self.base / 'release.zip'
         result = release.build(self.project, archive, True)

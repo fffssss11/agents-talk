@@ -127,6 +127,8 @@ def install(project, client, target, data_dir, config_path, apply=False, uninsta
 
 
 def main():
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, 'reconfigure'): stream.reconfigure(encoding='utf-8', errors='backslashreplace')
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--clients', nargs='+', choices=CLIENTS, required=True)
     parser.add_argument('--target', action='append', default=[], metavar='CLIENT=SKILL_ROOT')

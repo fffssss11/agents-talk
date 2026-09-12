@@ -83,6 +83,8 @@ def build(root, output=None, allow_unlicensed=False):
 
 
 def main():
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, 'reconfigure'): stream.reconfigure(encoding='utf-8', errors='backslashreplace')
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path)
     parser.add_argument('--check', action='store_true', help='Validate the exact source allowlist without writing an archive')
