@@ -1,0 +1,21 @@
+{
+  "name": "agents-talk",
+  "version": "0.1.0-rc.2",
+  "private": true,
+  "description": "Local multi-agent collaboration board. Node is only needed for browser development tests.",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node tests/browser.cjs && node tests/observatory.cjs && node tests/instances.cjs",
+    "test:browser": "node tests/browser.cjs",
+    "test:observatory": "node tests/observatory.cjs",
+    "test:instances": "node tests/instances.cjs",
+    "check": "node --check web/app.js",
+    "browser:install": "playwright install chromium"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
+  }
+}

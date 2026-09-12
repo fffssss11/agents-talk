@@ -1,0 +1,29 @@
+name: 功能建议 / Feature request
+description: 描述实际工作流程、现有限制和期望结果。
+title: "[Feature] "
+body:
+  - type: textarea
+    id: workflow
+    attributes:
+      label: 使用场景 / Workflow
+      description: 你在处理什么任务，在哪一步遇到限制？请勿附真实聊天、密钥或私人路径。
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望行为 / Expected behavior
+      description: 如何判断这个功能已经解决问题？
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 已尝试的方法 / Alternatives
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: 边界确认 / Scope
+      options:
+        - label: 已阅读 README 的功能与安全边界，附带内容已脱敏。
+          required: true

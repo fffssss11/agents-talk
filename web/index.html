@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#192c26">
+  <title>Agents Talk · 协作工作室</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='12' fill='%2324785c'/%3E%3Cpath d='M11 13h18v12H18l-7 5V13Z' fill='none' stroke='%23fff' stroke-width='2'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/observatory.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#conversation">跳到对话</a>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="工作室导航">
+      <a class="brand" href="/" aria-label="Agents Talk 首页">
+        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M6 7h20v15H14l-8 5V7Z"/><path d="M11 12h10M11 17h6"/></svg></span>
+        <span>Agents Talk<small>本地多智能体工作室</small></span>
+      </a>
+      <button id="new-session" class="new-session" type="button"><span aria-hidden="true">＋</span> 开启新会话 <span class="tiny-arrow" aria-hidden="true">↗</span></button>
+      <div class="sidebar-section-heading"><span>工作空间</span><span class="local-tag">LOCAL</span></div>
+      <nav class="workspace-nav" aria-label="视图">
+        <button class="nav-item active" id="conversation-nav" type="button"><span aria-hidden="true">▤</span> 实时对话 <span id="message-count" class="nav-count">0</span></button>
+        <button class="nav-item" id="tasks-nav" type="button"><span aria-hidden="true">▦</span> 任务面板 <span id="task-count" class="nav-count">0</span></button>
+        <button class="nav-item" id="team-nav" type="button"><span aria-hidden="true">◎</span> 全员对话 <span class="nav-arrow" aria-hidden="true">↗</span></button>
+        <button class="nav-item" id="workflow-nav" type="button"><span aria-hidden="true">⑂</span> 协作工作树 <span class="nav-arrow" aria-hidden="true">↗</span></button>
+        <button class="nav-item" id="skills-open" type="button"><span aria-hidden="true">⌘</span> 接入指南 <span class="nav-arrow" aria-hidden="true">↗</span></button>
+      </nav>
+      <div class="sidebar-section-heading"><span>协作成员</span><span id="agent-count">0</span></div>
+      <div id="agent-list" class="agent-list"><p class="sidebar-note">正在读取成员状态…</p></div>
+      <div class="sidebar-section-heading history-heading"><span>会话记录</span><span id="session-count">0</span></div>
+      <div id="session-list" class="session-list"><p class="sidebar-note">连接后显示会话</p></div>
+      <div class="sidebar-bottom">
+        <a href="/guide" target="_blank" rel="noopener" class="protocol-link"><span aria-hidden="true">↗</span> 协作协议与使用说明</a>
+        <div class="local-profile"><span class="avatar human-avatar" aria-hidden="true">你</span><div><strong>你的协作空间</strong><small>本地运行 · 人类掌舵</small></div><span class="profile-dot" aria-hidden="true"></span></div>
+      </div>
+    </aside>
+    <button class="sidebar-scrim" id="sidebar-scrim" aria-label="关闭导航" hidden></button>
+    <main class="workspace">
+      <header class="topbar">
+        <div class="breadcrumb"><button class="icon-button mobile-menu" id="menu-toggle" type="button" aria-label="展开导航" aria-controls="sidebar" aria-expanded="false">☰</button><span>工作空间</span><span class="crumb-slash" aria-hidden="true">/</span><strong>实时对话</strong></div>
+        <div class="topbar-actions"><span class="connection-status" id="connection-status" role="status"><i></i><span>正在连接</span></span><span class="topbar-divider"></span><label class="export-select"><span aria-hidden="true">↓</span><select id="export-format" aria-label="导出当前会话"><option value="">导出会话</option><option value="json">JSON 文件</option><option value="md">Markdown 文件</option></select></label></div>
+      </header>
+      <div class="workspace-heading">
+        <div><div class="eyebrow"><span class="small-spark" aria-hidden="true">✳</span> 一起思考，一起完成</div><h1 id="session-title">让想法在这里汇合<span class="heading-dot">.</span></h1><p id="session-subtitle">连接你的智能体，开启一场有进展的对话。</p></div>
+        <div class="session-controls"><span id="session-status" class="status-pill">等待连接</span><button id="pause-resume" class="button button-white small-button" type="button" disabled>暂停</button><button id="finish-session" class="button button-white small-button" type="button" disabled>结束会话</button></div>
+      </div>
+      <div id="connection-error" class="error-banner" role="alert" hidden><span id="connection-error-text"></span><button id="retry-connection" type="button">重新连接</button></div>
+      <div id="reader-warning" class="error-banner" role="status" hidden><span id="reader-warning-text"></span><button id="reader-reconnect" type="button">恢复接入</button></div>
+      <div id="migration-warning" class="error-banner" role="alert" hidden></div>
+      <div class="settings-row">
+        <div class="mode-field"><label for="mode-select">协作模式</label><select id="mode-select" disabled><option value="leader">主导协作</option><option value="roundtable">圆桌讨论</option></select></div>
+        <div class="mode-field" id="lead-field"><label for="lead-select">主导成员</label><select id="lead-select" disabled><option value="">等待成员接入</option></select></div>
+        <p id="mode-description">由主导成员统筹任务，其他成员协同推进。</p>
+      </div>
+      <section class="context-setting" aria-label="参与成员设置"><strong>参与实例</strong><div id="participant-options" class="participant-options"></div><p>同一客户端可开多个独立对话，每个窗口使用独立实例编号。</p><button id="instances-open" class="button button-primary small-button" type="button" disabled>＋ 管理协作实例</button></section>
+      <section class="context-setting" aria-label="成员上下文设置">
+        <label class="context-switch"><input id="shared-context" type="checkbox" role="switch" aria-describedby="context-description" disabled><span class="switch-track" aria-hidden="true"></span><span><strong>全局协作上下文</strong><small id="context-mode-label">关闭 · 聚焦主导与自己</small></span></label>
+        <p id="context-description">其他成员仅接收主导成员和自己的任务信息；主导成员保留全队摘要。</p>
+        <button id="context-preview-open" class="button button-white small-button" type="button" disabled>预览成员所见</button>
+      </section>
+      <div class="view-launcher"><div><strong>协作观察窗</strong><span>从对话到交付，看见每一步</span></div><div><button id="team-open" class="button button-white" type="button">◎ 全员对话</button><button id="workflow-open" class="button button-primary" type="button">⑂ 协作工作树</button></div></div>
+      <div class="workbench">
+        <section class="conversation-panel" id="conversation" aria-labelledby="conversation-heading" tabindex="-1">
+          <div class="panel-heading"><div class="panel-title"><span class="live-dot" id="conversation-live-dot" aria-hidden="true"></span><h2 id="conversation-heading">对话现场</h2><span class="section-hint" id="conversation-meta">等待第一条消息</span></div><div class="panel-actions"><button class="text-button" id="clear-filters" type="button" hidden>清除筛选</button><button id="conversation-expand" class="button button-white small-button" type="button" aria-expanded="false">放大阅读 ↗</button></div></div>
+          <div class="conversation-toolbar"><label class="search-field"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input id="search-input" type="search" placeholder="搜索对话内容…" aria-label="搜索已加载的对话内容" autocomplete="off"></label><select id="agent-filter" aria-label="按成员筛选对话"><option value="all">全部成员</option></select></div>
+          <div id="message-scroll" class="message-scroll" tabindex="0" aria-label="会话消息">
+            <div class="history-loader"><button id="load-older" class="text-button" type="button" hidden>加载更早的消息</button></div>
+            <div id="messages"></div>
+            <div id="empty-conversation" class="empty-conversation"><div class="empty-art" aria-hidden="true"><span class="orbit-avatar orbit-one">C</span><span class="orbit-avatar orbit-two">X</span><span class="orbit-avatar orbit-three">R</span><span class="empty-center"><svg viewBox="0 0 48 48"><path d="M10 10h28v22H22L10 40V10Z"/><path d="M17 18h14M17 24h9"/></svg></span><span class="orbit-dot"></span></div><span class="empty-eyebrow">从一个想法开始</span><h3>留个问题，让大家一起想。</h3><p>在下方写下需求，或先让智能体接入。<br>消息、任务与进度会在这里汇合。</p><button class="button button-white" id="empty-guide" type="button">查看智能体接入指南 <span aria-hidden="true">↗</span></button><div class="empty-steps"><span><b>01</b> 接入成员</span><span><b>02</b> 描述需求</span><span><b>03</b> 一起推进</span></div></div>
+            <div id="no-results" class="no-results" hidden><h3>没有匹配的消息</h3><p>试试其他关键词或成员。搜索范围为已加载的消息。</p></div>
+          </div>
+          <button id="jump-latest" class="jump-latest" type="button" hidden>有新消息 · 回到底部 ↓</button>
+          <form class="composer" id="message-form">
+            <div class="composer-tabs" role="tablist" aria-label="发送内容类型"><button id="tab-message" class="composer-tab selected" type="button" role="tab" aria-selected="true" aria-controls="message-options">发送消息</button><button id="tab-media" class="composer-tab" type="button" role="tab" aria-selected="false" aria-controls="media-options" tabindex="-1">媒体任务<span class="tab-mini">创作</span></button></div>
+            <div id="message-options" class="composer-options" role="tabpanel" aria-labelledby="tab-message"><label>发送给<select id="recipient-select"><option value="all">所有成员</option><option value="claude">Claude</option><option value="codex">Codex</option><option value="reasonix">Reasonix</option><option value="zcode">ZCode</option></select></label><label>优先级<select id="message-type"><option value="say">普通需求</option><option value="intervention">优先干预</option></select></label></div>
+            <div id="media-options" class="composer-options media-options" role="tabpanel" aria-labelledby="tab-media" hidden><label>执行成员<select id="media-recipient"><option value="claude">Claude</option><option value="codex">Codex</option></select></label><label>任务类型<select id="media-kind"><option value="image_generate">图像生成</option><option value="image_edit">图像编辑</option><option value="video_generate">视频生成</option></select></label><span id="media-capability" class="capability-note">能力未验证</span></div>
+            <div id="composer-notice" class="composer-notice" hidden></div>
+            <label for="message-body" class="sr-only">消息或媒体任务需求</label><textarea id="message-body" rows="3" placeholder="写下你的需求，给协作一个起点…"></textarea>
+            <div id="attachment-list" class="attachment-list" aria-label="待发送附件"></div>
+            <p id="composer-error" class="inline-error" role="alert" hidden></p>
+            <div class="composer-footer"><div class="composer-tools"><button id="attach-button" class="attach-button" type="button" aria-label="添加附件"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 13 7-7a3 3 0 0 1 4 4L9 20a5 5 0 0 1-7-7L13 2"/></svg><span>添加附件</span></button><input id="file-input" type="file" multiple hidden><span class="keyboard-hint">Ctrl + Enter 发送</span></div><button id="send-button" type="submit" class="button button-primary" disabled><span id="send-label">发送消息</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button></div>
+          </form>
+        </section>
+        <aside class="context-panel" id="task-panel" aria-label="会话任务与协作状态" tabindex="-1">
+          <section class="context-card workflow-preview"><div class="context-card-heading"><h2>协作工作树</h2><span class="subtle-tag">实时记录</span></div><div id="workflow-summary"></div><button id="workflow-preview-open" class="button button-white small-button" type="button">查看派工与整合 ↗</button></section>
+          <section class="context-card usage-card"><div class="context-card-heading"><h2>Token 用量</h2><select id="usage-scope" aria-label="Token 统计范围"><option value="session">当前会话</option><option value="all">全部会话</option></select></div><div class="usage-total"><strong id="usage-total">未报告</strong><span>已报告 token 合计</span></div><label class="usage-group-label">统计维度 <select id="usage-group" aria-label="Token 统计维度"><option value="instance">按协作实例</option><option value="client">按客户端汇总</option></select></label><div id="usage-list"></div><p class="context-footnote">实际值由成员从客户端用量记录上报，可能只覆盖部分调用。缓存输入和推理输出已含在总量中。文本估算仅统计看板发言，不代表模型实际消耗，也不包含图片或视频费用。</p></section>
+          <section class="context-card task-card"><div class="context-card-heading"><h2>任务看板</h2><span id="task-total" class="count-badge">0</span></div><div class="task-summary"><span id="task-summary-label">等待任务</span><strong id="task-progress-label">0 / 0</strong></div><div class="progress-track" role="progressbar" id="task-progress" aria-label="任务完成进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div><div id="task-list" class="task-list"><div class="compact-empty"><span aria-hidden="true">▦</span><h3>下一步，逐渐清晰</h3><p>成员创建任务后，负责人和进度会在这里更新。</p></div></div></section>
+          <section class="context-card"><div class="context-card-heading"><h2>媒体能力</h2><span class="subtle-tag">成员报告</span></div><div id="capability-list" class="capability-list"></div><p class="context-footnote">能力以成员报告为准；未验证时请先确认接入环境。</p></section>
+          <section class="context-card lock-card"><div class="context-card-heading"><h2>文件协作</h2><span id="lock-count" class="count-badge">0</span></div><div id="lock-list"><p class="context-empty">暂无占用中的文件</p></div></section>
+          <div class="human-note"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 3 7v6c0 5 9 9 9 9s9-4 9-9V7l-9-4Z"/><path d="m8 12 3 3 5-6"/></svg><div><strong>方向，由你决定。</strong><p>随时提出需求、优先干预，<br>或暂停当前协作。</p></div></div>
+        </aside>
+      </div>
+      <footer class="workspace-footer"><span>AGENTS TALK <span class="footer-dot">·</span> 让协作有迹可循</span><span id="sync-label">等待本地服务</span></footer>
+    </main>
+  </div>
+  <dialog id="session-dialog" class="modal"><form id="session-form"><div class="modal-heading"><div><span class="eyebrow">新的开始</span><h2>开启一场新协作</h2></div><button class="icon-button modal-close" type="button" aria-label="关闭新建会话">×</button></div><label class="form-field">会话名称<input id="new-session-title" name="title" required maxlength="120" placeholder="这次想一起完成什么？" autocomplete="off"></label><label class="form-field">协作模式<select id="new-session-mode"><option value="leader">主导协作</option><option value="roundtable">圆桌讨论</option></select></label><p class="modal-hint">新会话会保留已有历史，方便随时回看和继续。</p><p id="session-form-error" class="inline-error" role="alert" hidden></p><div class="modal-actions"><button class="button button-white modal-close" type="button">取消</button><button id="create-session-submit" class="button button-primary" type="submit">创建会话</button></div></form></dialog>
+  <dialog id="skills-dialog" class="modal skills-modal"><div class="modal-heading"><div><span class="eyebrow">连接你的协作伙伴</span><h2>智能体接入指南</h2></div><button class="icon-button modal-close" type="button" aria-label="关闭接入指南">×</button></div><p class="modal-hint">选择成员，将下方调用说明复制到对应智能体的会话中。说明由本地服务提供。</p><div id="skill-tabs" class="skill-tabs" role="tablist" aria-label="智能体接入说明"></div><div id="skill-content" role="tabpanel"><div class="skill-code-heading"><span id="skill-name"></span><button id="copy-skill" class="text-button" type="button">复制调用说明</button></div><pre id="skill-code" class="skill-code" tabindex="0"></pre><p id="skill-error" class="inline-error" role="alert" hidden></p></div><div class="modal-bottom"><span>接入后等待成员发送心跳。</span><a href="/guide" target="_blank" rel="noopener">阅读完整协议 ↗</a></div></dialog>
+  <dialog id="finish-dialog" class="modal"><form id="finish-form"><div class="modal-heading"><h2>结束当前会话？</h2><button class="icon-button modal-close" type="button" aria-label="关闭结束确认">×</button></div><p class="modal-hint">将向成员发送结束信号。对话记录会保留，你仍可查看和导出。</p><p id="finish-error" class="inline-error" role="alert" hidden></p><div class="modal-actions"><button class="button button-white modal-close" type="button">继续协作</button><button id="confirm-finish" class="button button-danger" type="submit">结束会话</button></div></form></dialog>
+  <dialog id="context-dialog" class="modal skills-modal"><div class="modal-heading"><div><span class="eyebrow">按需读取 · 来源可查</span><h2>成员上下文预览</h2></div><button class="icon-button modal-close" type="button" aria-label="关闭上下文预览">×</button></div><label class="form-field">查看成员<select id="context-agent"><option value="codex">Codex</option><option value="claude">Claude Code</option><option value="reasonix">Reasonix</option><option value="zcode">ZCode</option></select></label><p class="modal-hint" id="context-preview-meta">读取当前成员可见的摘要。</p><pre class="skill-code context-preview" id="context-preview" tabindex="0"></pre><p id="context-preview-error" class="inline-error" role="alert" hidden></p><button id="context-next" class="text-button" type="button" hidden>下一页任务摘要</button><p class="modal-hint">人工面板保留完整记录。开关控制成员后续读取范围，已进入客户端的内容无法撤回。</p></dialog>
+  <div id="toast-region" class="toast-region" aria-live="polite" aria-atomic="false"></div>
+  <dialog id="instances-dialog" class="modal instances-modal" aria-labelledby="instances-title">
+    <div class="modal-heading"><div><span class="eyebrow">同客户端 · 多窗口 · 独立分工</span><h2 id="instances-title">协作实例</h2></div><button class="icon-button modal-close" type="button" aria-label="关闭协作实例">×</button></div>
+    <p class="modal-hint">可创建多个 Codex、Claude、Reasonix 或 ZCode 实例。主导、协同与验收可使用相同模型，每个实例在独立客户端对话中接入。这里不自动打开客户端、不切换模型、不启动模型调用。</p>
+    <div id="instance-list" class="instance-list" aria-label="本会话实例列表"></div>
+    <form id="instance-form" class="instance-form">
+      <div class="instance-form-heading"><h3 id="instance-editor-title">新增实例</h3><button id="instance-new" class="text-button" type="button">新增另一个实例</button></div>
+      <div class="instance-fields">
+        <label class="form-field">客户端类型<select id="instance-client"><option value="codex">Codex</option><option value="claude">Claude Code</option><option value="reasonix">Reasonix</option><option value="zcode">ZCode</option></select></label>
+        <label class="form-field">实例名称<input id="instance-name" required maxlength="60" placeholder="例如 Codex 协同 1"></label>
+        <label class="form-field">模型标注<input id="instance-model" maxlength="100" placeholder="填写该窗口选择的模型，例如 gpt6"></label>
+        <label class="form-field">协作角色<select id="instance-role"><option value="worker">协同者</option><option value="lead">主导者</option><option value="reviewer">验收者</option></select></label>
+      </div>
+      <p class="modal-hint">主导者每个会话一位，选择主导会更新主导身份。原任务归属保留，不会自动转交。模型字段仅为标注，实际可用性和选择以客户端为准。</p>
+      <p id="instance-stale" class="inline-error" hidden>实例或参与设置已有变化。请重新点击“编辑”或“新增另一个实例”读取最新设置。</p>
+      <p id="instance-error" class="inline-error" role="alert" hidden></p><p id="instance-result" class="instance-result" role="status" hidden></p>
+      <div class="modal-actions"><button id="instance-save" type="submit" class="button button-primary">创建实例</button></div>
+    </form>
+  </dialog>
+  <dialog id="focus-dialog" class="modal focus-modal" aria-label="放大对话阅读"></dialog>
+  <dialog id="observatory-dialog" class="modal observatory" aria-labelledby="observatory-title">
+    <div class="observatory-header"><div><span class="eyebrow">共享记录 · 实时观察</span><h2 id="observatory-title">协作观察窗</h2><p id="observatory-session"></p></div><div class="panel-actions"><span id="observatory-status" role="status"></span><button class="icon-button modal-close" type="button" aria-label="关闭协作观察窗">×</button></div></div>
+    <div class="observatory-tabs" role="tablist" aria-label="协作视图"><button id="team-tab" type="button" role="tab" aria-selected="true" aria-controls="team-view">◎ 全员对话</button><button id="workflow-tab" type="button" role="tab" aria-selected="false" aria-controls="workflow-view" tabindex="-1">⑂ 协作工作树</button><button id="observatory-intervene" class="text-button" type="button">提出要求 ↗</button></div>
+    <section id="team-view" class="observation-view team-view" role="tabpanel" aria-labelledby="team-tab">
+      <div id="team-stage" class="team-stage" aria-label="各成员最近共享动态"></div>
+      <div class="team-toolbar"><span id="team-meta"></span><label><input id="team-follow" type="checkbox" checked> 跟随新消息</label><button id="team-latest" class="text-button" type="button">回到最新 ↓</button></div>
+      <div id="team-scroll" class="message-scroll" tabindex="0" aria-label="全员共享对话"><div class="history-loader"><button id="team-older" class="text-button" type="button">加载更早消息</button></div><div id="team-messages"></div><p id="team-empty" class="observation-empty" hidden>当前会话还没有共享消息。成员接入并发布后将在这里汇合。</p></div>
+      <p class="observation-note">显示已发布到看板的消息，包含定向消息和人工要求，不受主面板筛选影响。客户端内部对话不会自动同步；此窗口不改变 agent 的上下文读取权限。</p>
+    </section>
+    <section id="workflow-view" class="observation-view workflow-view" role="tabpanel" aria-labelledby="workflow-tab" hidden>
+      <div class="workflow-toolbar"><div><strong>派发 → 执行 → 独立验收 → 整合</strong><p id="workflow-meta"></p></div><label class="search-field"><input id="workflow-search" type="search" placeholder="搜索任务、成员或编号" aria-label="搜索工作树"></label></div>
+      <div id="workflow-scroll" tabindex="0" aria-label="实时任务工作树"><div id="workflow-tree"></div></div>
+      <p class="observation-note">分层依据正式 depends_on，依赖编号可定位上下游。预定验收依据 reviewer，实际验收依据 review。整合节点需主导显式标记 stage=integration，缺失信息显示“未指定”。这里只读协作流程，不创建 Git worktree。</p>
+    </section>
+  </dialog>
+</body>
+</html>

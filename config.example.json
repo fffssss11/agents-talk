@@ -1,0 +1,12 @@
+{
+  "mode": "leader",
+  "lead": "claude",
+  "shared_context": false,
+  "participants": ["claude", "codex", "reasonix"],
+  "agents": {
+    "claude": {"name": "Claude Code", "role": "lead", "color": "#d97757", "desc": "任务拆分与协作"},
+    "codex": {"name": "Codex", "role": "worker", "color": "#10a37f", "desc": "实现与验证"},
+    "reasonix": {"name": "Reasonix", "role": "worker", "color": "#4d6bfe", "desc": "实现与验证"},
+    "zcode": {"name": "ZCode", "role": "reviewer", "color": "#8b5cf6", "desc": "默认不参与，按需启用"}
+  }
+}

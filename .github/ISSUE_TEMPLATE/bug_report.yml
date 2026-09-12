@@ -1,0 +1,20 @@
+name: Bug report
+description: Report a reproducible problem using sanitized data.
+body:
+  - type: markdown
+    attributes:
+      value: "Do not attach real board logs, attachments, API keys, absolute home paths, or private client conversations. See SECURITY.md for vulnerability reporting."
+  - type: input
+    id: version
+    attributes:
+      label: Version / OS / Python / browser
+      placeholder: "0.1.0-rc.1 / Windows 11 / Python 3.13 / Chrome"
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal steps, expected result, actual result
+      description: Prefer a new empty board and fictional task names. Include error text after removing personal paths.
+    validations:
+      required: true
