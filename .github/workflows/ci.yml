@@ -4,6 +4,7 @@ permissions:
   contents: read
 jobs:
   python:
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
@@ -20,6 +21,7 @@ jobs:
       - run: python scripts/build_release.py --check --allow-unlicensed
       - run: python scripts/audit_public.py --source .
   browser:
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

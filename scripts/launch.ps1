@@ -7,6 +7,8 @@ $serverStem = if ($Port -eq 8765) { 'server' } else { 'server-' + $Port }
 $expectedVersion = (Get-Content -LiteralPath (Join-Path $projectRoot 'VERSION') -Raw).Trim()
 $launchMutex = New-Object System.Threading.Mutex($false, ('Local\AgentsTalkDashboard' + $Port))
 $acquired = $false
+$serverProcess = $null
+$isReady = $false
 try {
     try { $acquired = $launchMutex.WaitOne(20000) } catch [System.Threading.AbandonedMutexException] { $acquired = $true }
     if (-not $acquired) { throw 'Another dashboard launch is still running.' }
@@ -37,18 +39,23 @@ try {
         $serverArguments = '"' + $hubPath + '" serve --no-open --port ' + $Port
         $serverProcess = Start-Process -FilePath $pythonPath -ArgumentList $serverArguments -WorkingDirectory $projectRoot -WindowStyle Hidden -RedirectStandardOutput (Join-Path $runtimePath ($serverStem + '.log')) -RedirectStandardError (Join-Path $runtimePath ($serverStem + '-error.log')) -PassThru
         $serverProcess.Id | Set-Content -LiteralPath (Join-Path $runtimePath ($serverStem + '.pid'))
-        for ($attempt = 0; $attempt -lt 60; $attempt++) {
+        $startupClock = [System.Diagnostics.Stopwatch]::StartNew()
+        while ($startupClock.Elapsed.TotalSeconds -lt 30) {
             Start-Sleep -Milliseconds 250
             try {
                 $probe = Invoke-RestMethod -Uri ($panelUrl + 'api/health') -TimeoutSec 1
-                if ($probe.app -eq 'agents-talk' -and $probe.version -eq 2 -and $probe.root -eq $projectRoot -and $probe.data -eq $dataPath -and $probe.config -eq $configPath -and $probe.app_version -eq $expectedVersion) { $isReady = $true; break }
+                if ($probe.app -eq 'agents-talk' -and $probe.version -eq 2 -and $probe.pid -eq $serverProcess.Id -and $probe.root -eq $projectRoot -and $probe.data -eq $dataPath -and $probe.config -eq $configPath -and $probe.app_version -eq $expectedVersion) { $isReady = $true; break }
             } catch { }
             if ($serverProcess.HasExited) { break }
         }
-        if (-not $isReady) { throw 'Dashboard failed to start. Open .runtime/server-error.log in the project folder.' }
+        if (-not $isReady) { throw ('Dashboard failed to start. Open .runtime/' + $serverStem + '-error.log in the project folder.') }
     }
     if (-not $NoOpen) { Start-Process $panelUrl }
 } catch {
+    # Only clean up the child launched by this invocation, never an existing service.
+    if ($serverProcess -and -not $isReady -and -not $serverProcess.HasExited) {
+        Stop-Process -Id $serverProcess.Id -ErrorAction SilentlyContinue
+    }
     $_ | Out-String | Set-Content -LiteralPath (Join-Path $runtimePath 'launch-error.log') -Encoding UTF8
     if ($NoOpen) { throw }
     Add-Type -AssemblyName PresentationFramework

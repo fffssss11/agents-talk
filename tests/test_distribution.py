@@ -278,11 +278,12 @@ class DistributionTests(unittest.TestCase):
         def ps(script, *args, expected=0):
             # Background Start-Process may inherit anonymous pipe handles on Windows.
             # File-backed diagnostics let the launching shell exit independently.
+            # Allow the launcher's mutex/startup deadlines plus shared-runner startup.
             log = self.base / 'powershell-test.log'
             with log.open('wb') as output:
                 result = subprocess.run(['powershell', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File',
                                          str(self.project / 'scripts' / script), '-Port', str(port), *args],
-                                        env=self.env, cwd=self.base, stdout=output, stderr=output, timeout=35)
+                                        env=self.env, cwd=self.base, stdout=output, stderr=output, timeout=90)
             self.assertEqual(result.returncode, expected, log.read_text(encoding='utf-8', errors='replace'))
             return result
         ps('launch.ps1', '-NoOpen')
@@ -299,6 +300,18 @@ class DistributionTests(unittest.TestCase):
         finally:
             pid_file.write_bytes(saved)
             ps('stop.ps1')
+
+    @unittest.skipUnless(os.name == 'nt', 'Windows interpreter discovery')
+    def test_windows_explicit_python_skips_fallback_launchers(self):
+        script = self.base / 'interpreter-priority.ps1'
+        script.write_text(". (Join-Path $env:AGENTS_TALK_PROJECT_TEST 'scripts/python.ps1')\n"
+                          "function Get-Command { throw 'Unexpected fallback discovery' }\n"
+                          "Find-AgentsTalkPython\n", encoding='utf-8-sig')
+        result = subprocess.run(['powershell', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', str(script)],
+                                env={**self.env, 'AGENTS_TALK_PROJECT_TEST': str(self.project)},
+                                capture_output=True, encoding='utf-8', timeout=30)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(Path(result.stdout.strip()).resolve(), Path(sys.executable).resolve())
 
 
 if __name__ == '__main__':
